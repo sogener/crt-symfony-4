@@ -3,10 +3,15 @@
 namespace App\Entity;
 
 use App\Repository\PizzaRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ORM\Entity(repositoryClass=PizzaRepository::class)
+ * @Vich\Uploadable()
  */
 class Pizza
 {
@@ -15,23 +20,38 @@ class Pizza
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $title;
+    private ?string $title;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $description;
+    private ?string $description;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Ingredients::class)
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\ManyToMany(targetEntity=Ingredients::class, inversedBy="pizzas")
      */
     private $ingredients;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $imageName;
+
+    /**
+     * @Vich\UploadableField(mapping="pizza_images", fileNameProperty="imageName")
+     * @var File|null
+     */
+    private ?File $imageFile = null;
+
+    public function __construct()
+    {
+        $this->ingredients = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -50,6 +70,24 @@ class Pizza
         return $this;
     }
 
+    /**
+     * @return File|null
+     */
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    /**
+     * @param File|null $imageFile
+     * @return Pizza
+     */
+    public function setImageFile(?File $imageFile): Pizza
+    {
+        $this->imageFile = $imageFile;
+        return $this;
+    }
+
     public function getDescription(): ?string
     {
         return $this->description;
@@ -62,15 +100,45 @@ class Pizza
         return $this;
     }
 
-    public function getIngredients(): ?Ingredients
+    /**
+     * @return Collection
+     */
+    public function getIngredients(): Collection
     {
         return $this->ingredients;
     }
 
-    public function setIngredients(?Ingredients $ingredients): self
+    public function addIngredient(Ingredients $ingredient): self
     {
-        $this->ingredients = $ingredients;
+        if (!$this->ingredients->contains($ingredient)) {
+            $this->ingredients[] = $ingredient;
+        }
 
         return $this;
     }
+
+    public function removeIngredient(Ingredients $ingredient): self
+    {
+        $this->ingredients->removeElement($ingredient);
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getImageName(): ?string
+    {
+        return $this->imageName;
+    }
+
+    /**
+     * @param mixed $imageName
+     * @return string|null
+     */
+    public function setImageName(?string $imageName): ?string
+    {
+        return $this->imageName = $imageName;
+    }
+
 }
