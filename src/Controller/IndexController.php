@@ -6,6 +6,7 @@ use App\Form\AddToCartType;
 use App\Manager\CartManager;
 use App\Repository\PizzaRepository;
 use http\Exception\RuntimeException;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,8 +16,27 @@ use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 class IndexController extends AbstractController
 {
     #[Route('/', name: 'index')]
-    public function index(PizzaRepository $pizzaRepository, UploaderHelper $helper): Response
+    public function index(PizzaRepository $pizzaRepository, Request $request, PaginatorInterface $paginator): Response
     {
+        $em = $this->getDoctrine()->getManager();
+
+        $allPizzasQuery = $pizzaRepository->createQueryBuilder('p')
+            ->where("p.description IS NOT NULL")
+            ->getQuery();
+
+        $appointments = $paginator->paginate(
+            $allPizzasQuery,
+//            define the page parameter
+            $request->query->getInt('page', 1),
+//            items per page
+            5
+        );
+
+        return $this->render('index/index.html.twig', [
+            'appointments' => $appointments
+        ]);
+
+
         $pizzas = $pizzaRepository->findAll();
 
         return $this->render('index/index.html.twig', [
