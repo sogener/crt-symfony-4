@@ -2,9 +2,12 @@
 
 namespace App\Controller;
 
+use App\Form\AddToCartType;
+use App\Manager\CartManager;
 use App\Repository\PizzaRepository;
 use http\Exception\RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
@@ -22,7 +25,7 @@ class IndexController extends AbstractController
     }
 
     #[Route('detail/{id}', name: 'index_detail')]
-    public function show(int $id, PizzaRepository $pizzaRepository): Response
+    public function show(int $id, PizzaRepository $pizzaRepository, Request $request, CartManager $cartManager): Response
     {
         $pizza = $pizzaRepository->find($id);
 
@@ -32,9 +35,27 @@ class IndexController extends AbstractController
 
         $ingredients = $pizza->getIngredients()->toArray();
 
+        $form = $this->createForm(AddToCartType::class);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $item = $form->getData();
+            $item->setProduct($pizza);
+
+            $cart = $cartManager->getCurrentCart();
+            $cart
+                ->addItem($item)
+                ->setUpdatedAt(new \DateTime());
+
+            $cartManager->save($cart);
+
+            return $this->redirectToRoute('index_detail', ['id' => $pizza->getId()]);
+        }
+
+
         return $this->render('index/detail.html.twig', [
             'pizza' => $pizza,
-            'ingredients' => $ingredients
+            'ingredients' => $ingredients,
+            'form' => $form->createView()
         ]);
     }
 }

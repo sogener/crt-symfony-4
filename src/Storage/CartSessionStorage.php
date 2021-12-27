@@ -26,10 +26,10 @@ class CartSessionStorage
     const CART_KEY_NAME = 'cart_id';
 
     /**
-     * @param $session
-     * @param $cartRepository
+     * @param SessionInterface $session
+     * @param OrderRepository $cartRepository
      */
-    public function __construct($session, $cartRepository)
+    public function __construct(SessionInterface $session, OrderRepository $cartRepository)
     {
         $this->session = $session;
         $this->cartRepository = $cartRepository;
