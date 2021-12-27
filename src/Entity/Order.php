@@ -14,6 +14,12 @@ use Doctrine\ORM\Mapping as ORM;
 class Order
 {
     /**
+     * An order that is in progress, not placed yet.
+     * @var string
+     */
+    const STATUS_CART = 'cart';
+
+    /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -28,15 +34,15 @@ class Order
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $status;
+    private $status = self::STATUS_CART;
 
     /**
-     * @ORM\Column(type="datetime_immutable")
+     * @ORM\Column(type="datetime")
      */
     private $createdAt;
 
     /**
-     * @ORM\Column(type="datetime_immutable")
+     * @ORM\Column(type="datetime")
      */
     private $updatedAt;
 
@@ -60,10 +66,18 @@ class Order
 
     public function addItem(OrderItem $item): self
     {
-        if (!$this->items->contains($item)) {
-            $this->items[] = $item;
-            $item->setOrderRef($this);
+        foreach ($this->getItems() as $existingItem) {
+//            Item already exists, update the quantity
+            if ($existingItem->isEquals($item)) {
+                $existingItem->setQuantity(
+                    $existingItem->getQuantity() + $item->getQuantity()
+                );
+                return $this;
+            }
         }
+
+        $this->items[] = $item;
+        $item->setOrderRef($this);
 
         return $this;
     }
@@ -75,6 +89,15 @@ class Order
             if ($item->getOrderRef() === $this) {
                 $item->setOrderRef(null);
             }
+        }
+
+        return $this;
+    }
+
+    public function removeItems(): self
+    {
+        foreach ($this->getItems() as $item) {
+            $this->removeItem($item);
         }
 
         return $this;
@@ -92,27 +115,39 @@ class Order
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    public function setCreatedAt(\DateTime $createdAt): self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?\DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
+    public function setUpdatedAt(\DateTime $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
 
         return $this;
     }
+
+    public function getTotal(): float
+    {
+        $total = 0;
+
+        foreach ($this->getItems() as $item) {
+            $total += $item->getTotal();
+        }
+
+        return $total;
+    }
+
 }
