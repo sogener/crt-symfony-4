@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello CartController!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+    <div class="container mt-4">
+        <h1>Оформление заказа</h1>
+        {% if cart.items.count > 0 %}
+            <div class="row mt-4">
+                <!-- List of items -->
+                <div class="col-md-8">
+                    {{ form_start(form) }}
+                    <div class="card">
+                        <div class="card-header bg-dark text-white d-flex">
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <ol>
+                                {% for item in form.items %}
+                                    <li class="list-group-item d-flex">
+                                        <div class="flex-fill mr-2">
+                                            <h5 class="mt-0 mb-0">{{ item.vars.data.product.title }}</h5>
+                                            <div class="form-inline mt-2">
+                                                <div class="form-group mb-0 mr-2">
+                                                    Количество:
+                                                    {{ form_widget(item.quantity, {
+                                                        'attr': {
+                                                            'class': 'form-control form-control-sm ' ~ (item.quantity.vars.valid ? '' : 'is-invalid')
+                                                        }
+                                                    }) }}
+                                                    <div class="invalid-feedback">
+                                                        {{ form_errors(item.quantity) }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex-fill mr-2 text-right">
+                                            Цена за 1 единицу товара: <b>{{ item.vars.data.product.price }} RUB</b>
+                                        </div>
+                                        <div class="flex-fill mr-2">
+                                            <img src="{{ asset('/uploads/images/pizza/') ~ item.vars.data.product.imageName}}" alt="img-pizza">
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ol>
+                        </ul>
+                    </div>
+                    {{ form_end(form, {'render_rest': false}) }}
+                </div>
+                <!-- Summary -->
+                <div class="col-md-4">
+                    <div class="card mt-4 mt-md-0">
+                        <h5 class="card-header bg-dark text-white">Результат</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between">
+                                <div><b>Общая сумма заказа:</b></div>
+                                <span><b>{{ cart.total }} RUB</b></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% if cart.status == 'processed' %}
+                <div class="card-checkout__accepted">
+                    Заявка обработана, вам придёт сообщение на email :)
+                </div>
+            {% else %}
+                <div class="card-checkout">
+                    <a href="{{ path('cart_checkout') }}check/{{ cart.id }}">Отправить на проверку</a>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-info">
+                Оформление заказо пусто :( может пора чтонибудь выбрать? <a href="{{ path('index') }}">Тык сюда!</a>.
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
