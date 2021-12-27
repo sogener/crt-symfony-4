@@ -48,6 +48,11 @@ class Pizza
      */
     private ?File $imageFile = null;
 
+    /**
+     * @ORM\Column(type="float")
+     */
+    private ?float $price;
+
     public function __construct()
     {
         $this->ingredients = new ArrayCollection();
@@ -139,6 +144,18 @@ class Pizza
     public function setImageName(?string $imageName): ?string
     {
         return $this->imageName = $imageName;
+    }
+
+    public function getPrice(): ?float
+    {
+        return $this->price;
+    }
+
+    public function setPrice(float $price): self
+    {
+        $this->price = $price;
+
+        return $this;
     }
 
 }
