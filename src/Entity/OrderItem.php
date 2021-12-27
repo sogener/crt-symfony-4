@@ -32,7 +32,7 @@ class OrderItem
      * @ORM\ManyToOne(targetEntity=Order::class, inversedBy="items")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $orderRef;
+    private ?Order $orderRef;
 
     public function getId(): ?int
     {
