@@ -19,14 +19,13 @@
                             <h5>Items</h5>
                             <div class="ml-auto">
                                 {{ form_widget(form.save, {'attr': {'class': 'btn btn-warning'}}) }}
-                                {{ form_widget(form.clear, {'attr': {'class': 'btn btn-light'}}) }}
                             </div>
                         </div>
                         <ul class="list-group list-group-flush">
                             {% for item in form.items %}
                                 <li class="list-group-item d-flex">
                                     <div class="flex-fill mr-2">
-                                        <img src="https://via.placeholder.com/200x150" width="64" alt="product image">
+                                        <img src="{{ asset('/uploads/images/pizza/') ~ item.vars.data.product.imageName}}" alt="img-pizza">
                                     </div>
                                     <div class="flex-fill mr-2">
                                         <h5 class="mt-0 mb-0">{{ item.vars.data.product.title }}</h5>
@@ -42,11 +41,10 @@
                                                     {{ form_errors(item.quantity) }}
                                                 </div>
                                             </div>
-                                            {{ form_widget(item.remove, {'attr': {'class': 'btn btn-dark btn-sm'}}) }}
                                         </div>
                                     </div>
                                     <div class="flex-fill mr-2 text-right">
-                                        <b>{{ item.vars.data.product.price }} €</b>
+                                        <b>{{ item.vars.data.product.price }} RUB</b>
                                     </div>
                                 </li>
                             {% endfor %}
@@ -61,11 +59,11 @@
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item d-flex justify-content-between">
                                 <div><b>Total</b></div>
-                                <span><b>{{ cart.total }} €</b></span>
+                                <span><b>{{ cart.total }} RUB</b></span>
                             </li>
                         </ul>
                         <div class="card-body">
-                            <a href="#" class="btn btn-warning w-100">Checkout</a>
+                            <a href="" class="btn btn-warning w-100">Checkout</a>
                         </div>
                     </div>
                 </div>

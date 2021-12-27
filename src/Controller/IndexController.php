@@ -35,10 +35,13 @@ class IndexController extends AbstractController
 
         $ingredients = $pizza->getIngredients()->toArray();
 
+
         $form = $this->createForm(AddToCartType::class);
+        $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $item = $form->getData();
+
             $item->setProduct($pizza);
 
             $cart = $cartManager->getCurrentCart();
@@ -48,7 +51,7 @@ class IndexController extends AbstractController
 
             $cartManager->save($cart);
 
-            return $this->redirectToRoute('index_detail', ['id' => $pizza->getId()]);
+            return $this->redirectToRoute('cart', ['id' => $pizza->getId()]);
         }
 
 

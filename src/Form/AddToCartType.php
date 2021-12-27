@@ -17,8 +17,6 @@ class AddToCartType extends AbstractType
             ->add('add', SubmitType::class, [
                 'label' => 'Добавить в корзину'
             ])
-//            ->add('product')
-//            ->add('orderRef')
         ;
     }
 

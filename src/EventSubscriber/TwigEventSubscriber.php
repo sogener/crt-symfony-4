@@ -29,6 +29,10 @@ class TwigEventSubscriber implements EventSubscriberInterface
             [
                 'name' => 'Главная страница',
                 'href' => 'index'
+            ],
+            [
+                'name' => 'Корзина',
+                'href' => 'cart'
             ]
         ]);
     }
