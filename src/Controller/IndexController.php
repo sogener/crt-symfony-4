@@ -18,8 +18,6 @@ class IndexController extends AbstractController
     #[Route('/', name: 'index')]
     public function index(PizzaRepository $pizzaRepository, Request $request, PaginatorInterface $paginator): Response
     {
-        $em = $this->getDoctrine()->getManager();
-
         $allPizzasQuery = $pizzaRepository->createQueryBuilder('p')
             ->where("p.description IS NOT NULL")
             ->getQuery();
@@ -32,15 +30,27 @@ class IndexController extends AbstractController
             5
         );
 
+        $form = $this->createForm(AddToCartType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $item = $form->getData();
+
+            $item->setProduct($pizza);
+
+            $cart = $cartManager->getCurrentCart();
+            $cart
+                ->addItem($item)
+                ->setUpdatedAt(new \DateTime());
+
+            $cartManager->save($cart);
+
+            return $this->redirectToRoute('cart', ['id' => $pizza->getId()]);
+        }
+
         return $this->render('index/index.html.twig', [
-            'appointments' => $appointments
-        ]);
-
-
-        $pizzas = $pizzaRepository->findAll();
-
-        return $this->render('index/index.html.twig', [
-            'pizzas' => $pizzas
+            'appointments' => $appointments,
+            'form' => $form->createView()
         ]);
     }
 

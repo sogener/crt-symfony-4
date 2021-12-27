@@ -32,6 +32,7 @@ services:
   database:
     image: 'postgres:11-alpine'
     volumes:
+      - ./docker/dev/databse/:/docker-entrypoint-initdb.d/
       - 'database:/var/lib/postgresql/data'
     environment:
       POSTGRES_USER: ${POSTGRES_USER}

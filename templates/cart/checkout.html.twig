@@ -5,6 +5,7 @@
 {% block body %}
 <style>
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+    .image-pizza {width: 200px}
 </style>
 
     <div class="container mt-4">
@@ -41,7 +42,7 @@
                                             Цена за 1 единицу товара: <b>{{ item.vars.data.product.price }} RUB</b>
                                         </div>
                                         <div class="flex-fill mr-2">
-                                            <img src="{{ asset('/uploads/images/pizza/') ~ item.vars.data.product.imageName}}" alt="img-pizza">
+                                            <img class="image-pizza" src="{{ asset('/uploads/images/pizza/') ~ item.vars.data.product.imageName}}" alt="img-pizza">
                                         </div>
                                     </li>
                                 {% endfor %}
@@ -68,8 +69,8 @@
                     Заявка обработана, вам придёт сообщение на email :)
                 </div>
             {% else %}
-                <div class="card-checkout">
-                    <a href="{{ path('cart_checkout') }}check/{{ cart.id }}">Отправить на проверку</a>
+                <div class="card-body">
+                    <a class="btn btn-warning w-100" href="{{ path('cart_checkout') }}check/{{ cart.id }}">Оформить заказ</a>
                 </div>
             {% endif %}
         {% else %}
