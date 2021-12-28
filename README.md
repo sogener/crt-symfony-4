@@ -11,7 +11,7 @@
 
 `docker-compose exec app bin/console --env=test doctrine:fixtures:load`
 
-# rabbitmq
+# Rabbitmq
 
 `docker-compose exec app bin/console messenger:consume async -vv`
 
