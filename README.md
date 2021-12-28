@@ -5,7 +5,7 @@
 
 # Создание бд
 
-1. `docker-compose exec app bin/console doctrine:migrations:migrate`
+`docker-compose exec app bin/console doctrine:migrations:migrate`
 
 # Загрузка фикстур
 
