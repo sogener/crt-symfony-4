@@ -9,7 +9,7 @@
 
 # Загрузка фикстур
 
-`docker-compose exec app bin/console --env=test doctrine:fixtures:load`
+`docker-compose exec app bin/console doctrine:fixtures:load`
 
 # Генерация SSL ключей
 
