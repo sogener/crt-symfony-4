@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\OrderItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -9,6 +10,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=OrderItemRepository::class)
  */
+#[ApiResource(
+    collectionOperations: [
+        'get' => ["security" => "is_granted('ROLE_USER')"],
+        'post' => ["security" => "is_granted('ROLE_USER')"]
+    ],
+    itemOperations: ['get', 'patch'],
+)]
 class OrderItem
 {
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\UsersRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -10,6 +11,11 @@ use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * @ORM\Entity(repositoryClass=UsersRepository::class)
  */
+#[ApiResource(
+    collectionOperations: ['get', 'post'],
+    itemOperations: ['get', 'delete'],
+    attributes: ["security" => "is_granted('ROLE_ADMIN')"],
+)]
 class Users implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**

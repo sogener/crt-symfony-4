@@ -2,17 +2,25 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\PizzaRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ORM\Entity(repositoryClass=PizzaRepository::class)
  * @Vich\Uploadable()
  */
+#[ApiResource(
+    collectionOperations: ['get', 'post' => ["security" => "is_granted('ROLE_ADMIN')"]],
+    itemOperations: ['get', 'delete' => ["security" => "is_granted('ROLE_ADMIN')"]],
+    denormalizationContext: ['groups' => ['write']],
+    normalizationContext: ['groups' => ['read']],
+)]
 class Pizza
 {
     /**
@@ -25,11 +33,13 @@ class Pizza
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(["read", "write"])]
     private ?string $title;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(["read", "write"])]
     private ?string $description;
 
     /**
@@ -40,6 +50,7 @@ class Pizza
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(["read", "write"])]
     private $imageName;
 
     /**
@@ -51,6 +62,7 @@ class Pizza
     /**
      * @ORM\Column(type="float")
      */
+    #[Groups(["read", "write"])]
     private ?float $price;
 
     public function __construct()

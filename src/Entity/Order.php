@@ -2,22 +2,34 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\OrderRepository;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=OrderRepository::class)
  * @ORM\Table(name="`order`")
  */
+#[ApiResource(
+    collectionOperations: [
+        'get' => ["security" => "is_granted('ROLE_USER')"],
+        'post' => ["security" => "is_granted('ROLE_USER')"],
+    ],
+    itemOperations: ['get', 'patch'],
+    denormalizationContext: ['groups' => ['write']],
+    normalizationContext: ['groups' => ['read']],
+)]
 class Order
 {
     /**
      * An order that is in progress, not placed yet.
      * @var string
      */
-    const STATUS_CART = 'cart';
+    public const STATUS_CART = 'cart';
 
     /**
      * @ORM\Id
@@ -29,22 +41,25 @@ class Order
     /**
      * @ORM\OneToMany(targetEntity=OrderItem::class, mappedBy="orderRef", cascade={"persist", "remove"}, orphanRemoval=true)
      */
+    #[Groups(["read", "write"])]
     private $items;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $status = self::STATUS_CART;
+    private string $status = self::STATUS_CART;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private $createdAt;
+    #[Groups(["read", "write"])]
+    private ?DateTime $createdAt;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private $updatedAt;
+    #[Groups(["read", "write"])]
+    private ?DateTime $updatedAt;
 
     public function __construct()
     {
@@ -115,24 +130,24 @@ class Order
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTime
+    public function getCreatedAt(): ?DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTime $createdAt): self
+    public function setCreatedAt(DateTime $createdAt): self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTime
+    public function getUpdatedAt(): ?DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTime $updatedAt): self
+    public function setUpdatedAt(DateTime $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
 
